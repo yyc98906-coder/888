@@ -3,1203 +3,737 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RS等级收益计算器 - 智能财富管理系统</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>RS话术生成系统 Pro</title>
     <style>
         * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: 'Noto Sans SC', 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 25%, #312e81 50%, #1e1b4b 75%, #0f172a 100%);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            color: #f8fafc;
-        }
-        
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
-        .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        }
-        
-        .gradient-text {
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 25%, #ef4444 50%, #ec4899 75%, #8b5cf6 100%);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: shine 3s linear infinite;
-        }
-        
-        @keyframes shine {
-            to { background-position: 200% center; }
-        }
-        
-        .custom-select {
-            appearance: none;
-            -webkit-appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23fbbf24'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 1rem center;
-            background-size: 1.5em;
-        }
-        
-        .custom-select:focus {
-            box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.15), 0 0 20px rgba(251, 191, 36, 0.1);
-            border-color: #fbbf24;
-        }
-        
-        .input-glow {
-            transition: all 0.3s ease;
-        }
-        
-        .input-glow:focus {
-            box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.15), 0 0 20px rgba(251, 191, 36, 0.1);
-            border-color: #fbbf24;
-            background: rgba(251, 191, 36, 0.05);
-        }
-        
-        .number-animate {
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .pulse-gold {
-            animation: pulseGold 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        
-        @keyframes pulseGold {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.6); }
-            50% { box-shadow: 0 0 0 20px rgba(251, 191, 36, 0); }
-        }
-        
-        .float-up {
-            animation: floatUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        @keyframes floatUp {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .lang-btn {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .lang-btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.2);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-        
-        .lang-btn:active::before {
-            width: 300px;
-            height: 300px;
-        }
-        
-        .lang-btn.active {
-            background: linear-gradient(135deg, #fbbf24, #f59e0b, #ef4444);
-            color: #000;
-            font-weight: 700;
-            box-shadow: 0 10px 30px -10px rgba(251, 191, 36, 0.5);
-            transform: translateY(-2px);
-        }
-        
-        .report-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border-left: 4px solid;
-        }
-        
-        .report-card:hover {
-            transform: translateX(8px) scale(1.01);
-            box-shadow: 0 20px 40px -15px rgba(0,0,0,0.4);
-        }
-        
-        .report-zh { border-color: #ef4444; background: linear-gradient(90deg, rgba(239, 68, 68, 0.1), transparent); }
-        .report-en { border-color: #3b82f6; background: linear-gradient(90deg, rgba(59, 130, 246, 0.1), transparent); }
-        .report-ms { border-color: #eab308; background: linear-gradient(90deg, rgba(234, 179, 8, 0.1), transparent); }
-        
-        .copy-btn {
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .copy-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px -10px currentColor;
-        }
-        
-        .copy-btn:active {
-            transform: scale(0.95);
-        }
-        
-        .shine {
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .shine::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0) 100%);
-            transform: rotate(30deg);
-            animation: shineEffect 4s infinite;
-        }
-        
-        @keyframes shineEffect {
-            0% { transform: translateX(-100%) rotate(30deg); }
-            100% { transform: translateX(100%) rotate(30deg); }
-        }
-        
-        .stat-card {
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, transparent, rgba(255,255,255,0.05), transparent);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        
-        .stat-card:hover::before {
-            opacity: 1;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px -15px rgba(0,0,0,0.3);
-            border-color: rgba(251, 191, 36, 0.3);
-        }
-        
-        .gradient-border {
-            position: relative;
-        }
-        
-        .gradient-border::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            padding: 2px;
-            background: linear-gradient(135deg, #fbbf24, #ef4444, #8b5cf6, #fbbf24);
-            background-size: 300% 300%;
-            animation: gradientRotate 4s linear infinite;
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-        }
-        
-        @keyframes gradientRotate {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
-        .floating-icon {
-            animation: float 6s ease-in-out infinite;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(5deg); }
-        }
-        
-        .toast {
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
-        
-        .upgrade-card {
-            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.05));
-            border: 1px solid rgba(251, 191, 36, 0.3);
-        }
-        
-        .upgrade-arrow {
-            animation: bounceRight 1s infinite;
-        }
-        
-        @keyframes bounceRight {
-            0%, 100% { transform: translateX(0); }
-            50% { transform: translateX(5px); }
-        }
-        
-        .level-badge {
-            transition: all 0.3s ease;
-        }
-        
-        .level-badge:hover {
-            transform: scale(1.05);
-        }
-        
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: rgba(251, 191, 36, 0.3);
-            border-radius: 4px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(251, 191, 36, 0.5);
-        }
-        
-        .amount-display {
-            font-variant-numeric: tabular-nums;
-            letter-spacing: -0.02em;
-        }
-        
-        .promo-text {
-            background: linear-gradient(135deg, #fbbf24, #f59e0b, #ef4444);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            padding: 20px;
         }
 
-        .bold-amount {
-            font-weight: 700;
-            color: #fbbf24;
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
         }
-        
-        /* New Input Styling */
-        .input-group-icon {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #94a3b8;
-            font-weight: bold;
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            text-align: center;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            border-radius: 12px;
+            color: rgba(255,255,255,0.8);
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .form-group label .optional {
+            color: #999;
+            font-weight: normal;
+            font-size: 0.85rem;
+        }
+
+        select, input[type="number"], input[type="text"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            cursor: pointer;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .checkbox-wrapper label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .btn-generate {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            margin-top: 10px;
+        }
+
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-generate:active {
+            transform: translateY(0);
+        }
+
+        .output-section {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px dashed #e0e0e0;
+        }
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .output-header h3 {
+            color: #333;
+            font-size: 1.2rem;
+        }
+
+        .language-tabs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .lang-tab {
+            padding: 6px 14px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .lang-tab:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .lang-tab.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .output-content {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 200px;
+            white-space: pre-wrap;
+            line-height: 1.8;
+            color: #333;
+            font-size: 0.95rem;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .output-content:empty::before {
+            content: "点击上方按钮生成话术...";
+            color: #999;
+            font-style: italic;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-copy, .btn-download {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-copy:hover, .btn-download:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-copy.copied {
+            background: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #333;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 500;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
         }
     </style>
+<base target="_blank">
 </head>
-<body class="overflow-x-hidden">
-
-    <!-- 语言切换 -->
-    <div class="fixed top-4 right-4 z-50 flex gap-2 glass-card rounded-full p-1.5">
-        <button onclick="setLanguage('zh')" class="lang-btn active px-4 py-2 rounded-full text-sm font-medium" data-lang="zh">
-            中文
-        </button>
-        <button onclick="setLanguage('en')" class="lang-btn px-4 py-2 rounded-full text-sm font-medium" data-lang="en">
-            English
-        </button>
-        <button onclick="setLanguage('ms')" class="lang-btn px-4 py-2 rounded-full text-sm font-medium" data-lang="ms">
-            Melayu
-        </button>
+<body>
+    <div class="header">
+        <h1>🚀 RS话术生成系统 Pro</h1>
+        <p>专业、高效、智能的话术生成工具</p>
     </div>
 
-    <!-- 背景装饰 -->
-    <div class="fixed inset-0 overflow-hidden pointer-events-none">
-        <div class="absolute top-20 left-10 text-9xl opacity-[0.03] floating-icon">💰</div>
-        <div class="absolute bottom-20 right-10 text-8xl opacity-[0.03] floating-icon" style="animation-delay: 1s;">📈</div>
-        <div class="absolute top-1/3 right-1/4 text-7xl opacity-[0.03] floating-icon" style="animation-delay: 2s;">🎯</div>
-    </div>
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('upgrade')">
+                <span>🎉</span> 升级祝贺
+            </button>
+            <button class="tab" onclick="switchTab('invite')">
+                <span>🤝</span> 邀请祝贺
+            </button>
+        </div>
 
-    <div class="relative z-10 container mx-auto px-4 py-8 max-w-5xl pt-24">
-        
-        <!-- 头部 -->
-        <header class="text-center mb-10 float-up">
-            <div class="inline-flex items-center gap-2 mb-4 px-5 py-2.5 rounded-full glass-card text-sm border border-green-500/30">
-                <span class="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse shadow-[0_0_10px_rgba(74,222,128,0.8)]"></span>
-                <span class="text-green-400 font-semibold tracking-wide" data-i18n="systemOnline">RS等级系统在线</span>
+        <!-- 升级祝贺 -->
+        <div class="card" id="upgradeBox">
+            <div class="form-group">
+                <label>目标等级</label>
+                <select id="rank">
+                    <option value="R0">R0</option>
+                    <option value="R1" selected>R1</option>
+                    <option value="R2">R2</option>
+                    <option value="R3">R3</option>
+                    <option value="R4">R4</option>
+                </select>
             </div>
-            <h1 class="text-5xl md:text-6xl font-black mb-4 tracking-tight">
-                <span class="gradient-text">RS等级收益计算器</span>
-            </h1>
-            <p class="text-slate-400 text-lg max-w-2xl mx-auto leading-relaxed" data-i18n="subtitle">
-                选择等级，输入金额，精准计算您的财富收益
-            </p>
-        </header>
 
-        <!-- 主内容 -->
-        <div class="grid lg:grid-cols-5 gap-6">
-            
-            <!-- 左侧：输入区域 -->
-            <div class="lg:col-span-2 space-y-5 float-up">
-                
-                <!-- 恭喜/升级卡片 -->
-                <div id="promoCard" class="glass-card rounded-2xl p-6 gradient-border shine relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-500/20 to-transparent rounded-bl-full"></div>
-                    <div class="flex items-center gap-4 mb-4 relative">
-                        <div id="promoIcon" class="w-14 h-14 rounded-xl bg-gradient-to-br from-amber-400 via-orange-500 to-red-500 flex items-center justify-center text-2xl pulse-gold shadow-2xl">
-                            🎉
-                        </div>
-                        <div>
-                            <h2 id="promoTitle" class="text-xl font-bold text-amber-400 mb-0.5" data-i18n="congrats">恭喜您！</h2>
-                            <p id="promoSub" class="text-slate-300 text-sm" data-i18n="congratsSub">成功增加储蓄钱包资金</p>
-                        </div>
-                    </div>
-                    <p id="promoDesc" class="text-slate-300 leading-relaxed text-sm" data-i18n="congratsDesc">
-                        您已迈出财富增值的第一步，财富增长之路正式开启！
-                    </p>
-                </div>
+            <div class="form-group">
+                <label>活动奖励 (%) <span class="optional">- 可选</span></label>
+                <input type="number" id="upActivity" placeholder="例如: 10" min="0" max="100">
+            </div>
 
-                <!-- 当前等级 -->
-                <div class="glass-card rounded-2xl p-5">
-                    <label class="block text-sm text-slate-400 mb-3 flex items-center gap-2">
-                        <i class="fas fa-star text-amber-400"></i>
-                        <span data-i18n="currentLevel">当前等级</span>
-                    </label>
-                    <div class="relative">
-                        <select id="currentLevelSelect" onchange="updateUpgradeOptions()" class="custom-select w-full bg-slate-800/50 border border-slate-600 rounded-xl py-3.5 pl-4 pr-12 text-lg font-bold text-white focus:outline-none transition-all cursor-pointer hover:border-slate-500">
-                            <optgroup label="R Series (入门级)">
-                                <option value="R⭐" selected>R⭐ - 2.0%</option>
-                                <option value="R⭐⭐">R⭐⭐ - 2.3%</option>
-                                <option value="R⭐⭐⭐">R⭐⭐⭐ - 2.5%</option>
-                            </optgroup>
-                            <optgroup label="S Series (进阶级)">
-                                <option value="S⭐">S⭐ - 2.5%</option>
-                                <option value="S⭐⭐">S⭐⭐ - 3.0%</option>
-                                <option value="S⭐⭐⭐">S⭐⭐⭐ - 4.0%</option>
-                            </optgroup>
-                            <optgroup label="RS Series (精英级)">
-                                <option value="RS⭐">RS⭐ - 5.0%</option>
-                                <option value="RS⭐⭐">RS⭐⭐ - 6.0%</option>
-                                <option value="RS⭐⭐⭐">RS⭐⭐⭐ - 8.0%</option>
-                            </optgroup>
-                        </select>
+            <div class="checkbox-wrapper">
+                <input type="checkbox" id="upLucky">
+                <label for="upLucky">✨ 包含幸运抽奖资格</label>
+            </div>
+
+            <div class="checkbox-wrapper">
+                <input type="checkbox" id="upCashCode">
+                <label for="upCashCode">🎟 包含现金代码奖励</label>
+            </div>
+
+            <button class="btn-generate" onclick="genUpgrade()">
+                ✨ 生成升级祝贺话术
+            </button>
+
+            <div class="output-section hidden" id="upOutputSection">
+                <div class="output-header">
+                    <h3>📋 生成结果</h3>
+                    <div class="language-tabs">
+                        <button class="lang-tab active" onclick="switchLang('up', 'zh')">中文</button>
+                        <button class="lang-tab" onclick="switchLang('up', 'en')">English</button>
+                        <button class="lang-tab" onclick="switchLang('up', 'ms')">Melayu</button>
                     </div>
                 </div>
 
-                <!-- 升级选项 -->
-                <div class="upgrade-card rounded-2xl p-5">
-                    <label class="block text-sm text-amber-400 mb-3 flex items-center gap-2 font-semibold">
-                        <i class="fas fa-arrow-up"></i>
-                        <span data-i18n="upgradeOptions">升级选项</span>
-                        <span class="text-xs text-slate-400 font-normal ml-auto" data-i18n="optional">可选</span>
-                    </label>
-                    <div class="relative">
-                        <select id="upgradeLevelSelect" onchange="handleUpgradeChange()" class="custom-select w-full bg-slate-800/50 border border-amber-400/30 rounded-xl py-3.5 pl-4 pr-12 text-lg font-bold text-white focus:outline-none transition-all cursor-pointer hover:border-amber-400">
-                            <option value="" data-i18n="noUpgrade">不升级 / 自定义选择</option>
-                            <!-- 动态生成升级选项 -->
-                        </select>
-                    </div>
-                    
-                    <!-- 升级预览 -->
-                    <div id="upgradePreview" class="mt-4 p-4 rounded-xl bg-slate-800/50 border border-slate-600 hidden">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <span id="fromLevel" class="text-slate-400 font-bold">R⭐</span>
-                                <i class="fas fa-arrow-right text-amber-400 upgrade-arrow"></i>
-                                <span id="toLevel" class="text-amber-400 font-bold text-xl">R⭐⭐</span>
-                            </div>
-                            <div class="text-right">
-                                <div class="text-xs text-slate-400" data-i18n="newRate">新收益率</div>
-                                <div id="newRate" class="text-lg font-bold text-green-400">2.3%</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <div class="stats-grid" id="upStats"></div>
 
-                <!-- 目标等级信息 -->
-                <div class="glass-card rounded-2xl p-5">
-                    <label class="block text-sm text-slate-400 mb-3 flex items-center gap-2">
-                        <i class="fas fa-bullseye text-amber-400"></i>
-                        <span data-i18n="targetLevel">目标等级</span>
-                    </label>
-                    <div class="relative">
-                        <select id="targetLevelSelect" onchange="selectTargetLevel(this.value)" class="custom-select w-full bg-slate-800/50 border border-slate-600 rounded-xl py-3.5 pl-4 pr-12 text-lg font-bold text-white focus:outline-none transition-all cursor-pointer hover:border-slate-500">
-                            <optgroup label="R Series (入门级)">
-                                <option value="R⭐" selected>R⭐ - 2.0% (50-299)</option>
-                                <option value="R⭐⭐">R⭐⭐ - 2.3% (300-599)</option>
-                                <option value="R⭐⭐⭐">R⭐⭐⭐ - 2.5% (600-1,499)</option>
-                            </optgroup>
-                            <optgroup label="S Series (进阶级)">
-                                <option value="S⭐">S⭐ - 2.5% (1,500-2,499)</option>
-                                <option value="S⭐⭐">S⭐⭐ - 3.0% (2,500-9,999)</option>
-                                <option value="S⭐⭐⭐">S⭐⭐⭐ - 4.0% (10,000-299,999)</option>
-                            </optgroup>
-                            <optgroup label="RS Series (精英级)">
-                                <option value="RS⭐">RS⭐ - 5.0% (300,000+)</option>
-                                <option value="RS⭐⭐">RS⭐⭐ - 6.0% (300,000+)</option>
-                                <option value="RS⭐⭐⭐">RS⭐⭐⭐ - 8.0% (300,000+)</option>
-                            </optgroup>
-                        </select>
-                    </div>
-                    
-                    <!-- 当前等级信息 -->
-                    <div class="mt-4 p-4 rounded-xl bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-400/20">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <div class="text-xs text-slate-400 mb-1" data-i18n="selectedLevel">已选等级</div>
-                                <div class="text-2xl font-black text-amber-400" id="selectedLevelName">R⭐</div>
-                            </div>
-                            <div class="text-right">
-                                <div class="text-xs text-slate-400 mb-1" data-i18n="dailyRate">日收益率</div>
-                                <div class="text-2xl font-black text-amber-400" id="selectedRate">2.0%</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <div class="output-content" id="upResult"></div>
 
-                <!-- 金额输入 -->
-                <div class="glass-card rounded-2xl p-5 space-y-4">
-                    <div>
-                        <label class="block text-sm text-slate-400 mb-3 flex items-center gap-2">
-                            <i class="fas fa-wallet text-amber-400"></i>
-                            <span data-i18n="balance">储蓄钱包余额 (RM)</span>
-                        </label>
-                        <div class="relative mb-4">
-                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-lg">RM</span>
-                            <input 
-                                type="number" 
-                                id="principal" 
-                                value="50.00"
-                                class="w-full bg-slate-800/50 border border-slate-600 rounded-xl py-4 pl-14 pr-4 text-2xl font-bold text-white input-glow focus:outline-none transition-all amount-display"
-                                oninput="calculate()"
-                                step="0.01"
-                                placeholder="0.00"
-                            >
-                        </div>
-                    </div>
-
-                    <!-- NEW: Add Funds Input -->
-                    <div>
-                        <label class="block text-sm text-slate-400 mb-3 flex items-center gap-2">
-                            <i class="fas fa-plus-circle text-green-400"></i>
-                            <span data-i18n="addFunds">本次转入金额 (RM)</span>
-                        </label>
-                        <div class="relative">
-                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-lg">RM</span>
-                            <input 
-                                type="number" 
-                                id="addFundsInput" 
-                                value="100.00"
-                                class="w-full bg-slate-800/50 border border-green-500/30 rounded-xl py-3 pl-14 pr-4 text-xl font-bold text-white input-glow focus:outline-none transition-all amount-display"
-                                oninput="calculate()"
-                                step="0.01"
-                                placeholder="0.00"
-                            >
-                        </div>
-                        <p class="text-xs text-slate-500 mt-2" data-i18n="addFundsHint">输入本次新增资金，系统将自动计算总余额。</p>
-                    </div>
-                    
-                    <!-- 复制按钮组 -->
-                    <div class="grid grid-cols-3 gap-2 pt-2">
-                        <button onclick="copyReport('zh')" class="copy-btn py-3 px-2 bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white rounded-xl text-xs transition-all flex flex-col items-center gap-1 border border-red-400/20 hover:border-red-500">
-                            <i class="fas fa-copy text-sm"></i>
-                            <span>复制中文</span>
-                        </button>
-                        <button onclick="copyReport('en')" class="copy-btn py-3 px-2 bg-blue-500/10 hover:bg-blue-500 text-blue-400 hover:text-white rounded-xl text-xs transition-all flex flex-col items-center gap-1 border border-blue-400/20 hover:border-blue-500">
-                            <i class="fas fa-copy text-sm"></i>
-                            <span>Copy</span>
-                        </button>
-                        <button onclick="copyReport('ms')" class="copy-btn py-3 px-2 bg-yellow-500/10 hover:bg-yellow-500 text-yellow-400 hover:text-black rounded-xl text-xs transition-all flex flex-col items-center gap-1 border border-yellow-400/20 hover:border-yellow-500">
-                            <i class="fas fa-copy text-sm"></i>
-                            <span>Salin</span>
-                        </button>
-                    </div>
-                    
-                    <button onclick="copyAllReports()" class="w-full mt-2 py-3 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl font-bold text-sm hover:scale-[1.02] transition-all flex items-center justify-center gap-2 shadow-lg">
-                        <i class="fas fa-copy"></i>
-                        <span data-i18n="copyAll">复制全部三种语言</span>
+                <div class="action-buttons">
+                    <button class="btn-copy" onclick="copyText('up')">
+                        📋 复制内容
+                    </button>
+                    <button class="btn-download" onclick="downloadText('up')">
+                        💾 下载文本
                     </button>
                 </div>
             </div>
+        </div>
 
-            <!-- 右侧：结果展示 -->
-            <div class="lg:col-span-3 space-y-5 float-up" style="animation-delay: 0.2s;">
-                
-                <!-- 收益概览卡片 -->
-                <div class="glass-card rounded-2xl p-6 gradient-border relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-amber-500/10 to-transparent rounded-bl-full"></div>
-                    
-                    <!-- 余额展示 -->
-                    <div class="text-center mb-8 relative">
-                        <div class="text-sm text-slate-400 mb-2 uppercase tracking-wider" data-i18n="walletBalance">储蓄钱包余额</div>
-                        <div class="text-5xl md:text-6xl font-black gradient-text number-animate tracking-tight amount-display" id="displayPrincipal">
-                            **RM 150.00**
-                        </div>
-                        <div class="mt-2 text-xs text-slate-500" id="principalInWords">一百五十令吉</div>
-                    </div>
+        <!-- 邀请祝贺 -->
+        <div class="card hidden" id="inviteBox">
+            <div class="form-group">
+                <label>邀请者等级</label>
+                <select id="inviter">
+                    <option value="R0">R0</option>
+                    <option value="R1" selected>R1</option>
+                    <option value="R2">R2</option>
+                    <option value="R3">R3</option>
+                    <option value="R4">R4</option>
+                </select>
+            </div>
 
-                    <!-- 升级信息展示（升级时显示） -->
-                    <div id="upgradeInfo" class="hidden mb-6 p-4 rounded-xl bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-400/30">
-                        <div class="flex items-center justify-center gap-4">
-                            <div class="text-center">
-                                <div class="text-xs text-slate-400 mb-1" data-i18n="before">升级前</div>
-                                <div id="beforeRate" class="text-lg font-bold text-slate-400">2.0%</div>
-                            </div>
-                            <div class="flex flex-col items-center">
-                                <i class="fas fa-arrow-right text-green-400 text-xl upgrade-arrow"></i>
-                                <span class="text-xs text-green-400 mt-1" data-i18n="upgraded">已升级</span>
-                            </div>
-                            <div class="text-center">
-                                <div class="text-xs text-slate-400 mb-1" data-i18n="after">升级后</div>
-                                <div id="afterRate" class="text-lg font-bold text-green-400">2.3%</div>
-                            </div>
-                        </div>
-                    </div>
+            <div class="form-group">
+                <label>新员工等级</label>
+                <select id="newRank">
+                    <option value="R0">R0</option>
+                    <option value="R1" selected>R1</option>
+                    <option value="R2">R2</option>
+                    <option value="R3">R3</option>
+                    <option value="R4">R4</option>
+                </select>
+            </div>
 
-                    <!-- 收益网格 -->
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        <div class="stat-card bg-slate-800/30 rounded-xl p-4 text-center border border-slate-700/50">
-                            <div class="w-10 h-10 mx-auto rounded-lg bg-gradient-to-br from-amber-400/20 to-orange-500/20 flex items-center justify-center mb-2 border border-amber-400/20">
-                                <i class="fas fa-sun text-amber-400"></i>
-                            </div>
-                            <div class="text-xs text-slate-400 mb-1" data-i18n="dailyIncome">每日</div>
-                            <div class="text-lg font-bold text-amber-400 number-animate amount-display" id="dailyIncome">**RM 3.00**</div>
-                        </div>
+            <div class="form-group">
+                <label>活动奖励 (%) <span class="optional">- 可选</span></label>
+                <input type="number" id="inActivity" placeholder="例如: 10" min="0" max="100">
+            </div>
 
-                        <div class="stat-card bg-slate-800/30 rounded-xl p-4 text-center border border-slate-700/50">
-                            <div class="w-10 h-10 mx-auto rounded-lg bg-gradient-to-br from-amber-400/20 to-orange-500/20 flex items-center justify-center mb-2 border border-amber-400/20">
-                                <i class="fas fa-calendar-alt text-amber-400"></i>
-                            </div>
-                            <div class="text-xs text-slate-400 mb-1" data-i18n="monthlyIncome">每月</div>
-                            <div class="text-lg font-bold text-amber-400 number-animate amount-display" id="monthlyIncome">**RM 90.00**</div>
-                        </div>
+            <div class="checkbox-wrapper">
+                <input type="checkbox" id="inLucky">
+                <label for="inLucky">✨ 包含幸运抽奖资格</label>
+            </div>
 
-                        <div class="stat-card bg-slate-800/30 rounded-xl p-4 text-center border border-slate-700/50">
-                            <div class="w-10 h-10 mx-auto rounded-lg bg-gradient-to-br from-amber-400/20 to-orange-500/20 flex items-center justify-center mb-2 border border-amber-400/20">
-                                <i class="fas fa-calendar-check text-amber-400"></i>
-                            </div>
-                            <div class="text-xs text-slate-400 mb-1" data-i18n="yearlyIncome">每年</div>
-                            <div class="text-lg font-bold text-amber-400 number-animate amount-display" id="yearlyIncome">**RM 1,095.00**</div>
-                        </div>
+            <div class="checkbox-wrapper">
+                <input type="checkbox" id="inCashCode">
+                <label for="inCashCode">🎟 包含现金代码奖励</label>
+            </div>
 
-                        <div class="stat-card bg-slate-800/30 rounded-xl p-4 text-center border border-slate-700/50">
-                            <div class="w-10 h-10 mx-auto rounded-lg bg-gradient-to-br from-amber-400/20 to-orange-500/20 flex items-center justify-center mb-2 border border-amber-400/20">
-                                <i class="fas fa-coins text-amber-400"></i>
-                            </div>
-                            <div class="text-xs text-slate-400 mb-1" data-i18n="twoYearIncome">两年</div>
-                            <div class="text-lg font-bold text-amber-400 number-animate amount-display" id="twoYearIncome">**RM 2,190.00**</div>
-                        </div>
+            <button class="btn-generate" onclick="genInvite()">
+                ✨ 生成邀请祝贺话术
+            </button>
+
+            <div class="output-section hidden" id="inOutputSection">
+                <div class="output-header">
+                    <h3>📋 生成结果</h3>
+                    <div class="language-tabs">
+                        <button class="lang-tab active" onclick="switchLang('in', 'zh')">中文</button>
+                        <button class="lang-tab" onclick="switchLang('in', 'en')">English</button>
+                        <button class="lang-tab" onclick="switchLang('in', 'ms')">Melayu</button>
                     </div>
                 </div>
 
-                <!-- 多语言报告预览 -->
-                <div class="glass-card rounded-2xl p-5">
-                    <h3 class="text-lg font-bold text-slate-200 mb-4 flex items-center gap-2">
-                        <i class="fas fa-file-alt text-amber-400"></i>
-                        <span data-i18n="preview">报告预览</span>
-                    </h3>
-                    
-                    <div class="space-y-3">
-                        <!-- 中文报告 -->
-                        <div class="report-card report-zh rounded-xl p-4 relative">
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="w-6 h-6 rounded bg-red-500/20 flex items-center justify-center">
-                                    <i class="fas fa-flag text-red-400 text-xs"></i>
-                                </span>
-                                <span class="text-red-400 text-xs font-bold">中文</span>
-                            </div>
-                            <div class="text-slate-300 text-xs whitespace-pre-line font-mono leading-relaxed max-h-40 overflow-y-auto" id="reportZh">-</div>
-                        </div>
+                <div class="stats-grid" id="inStats"></div>
 
-                        <!-- 英文报告 -->
-                        <div class="report-card report-en rounded-xl p-4 relative">
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="w-6 h-6 rounded bg-blue-500/20 flex items-center justify-center">
-                                    <i class="fas fa-flag text-blue-400 text-xs"></i>
-                                </span>
-                                <span class="text-blue-400 text-xs font-bold">English</span>
-                            </div>
-                            <div class="text-slate-300 text-xs whitespace-pre-line font-mono leading-relaxed max-h-40 overflow-y-auto" id="reportEn">-</div>
-                        </div>
+                <div class="output-content" id="inResult"></div>
 
-                        <!-- 马来语报告 -->
-                        <div class="report-card report-ms rounded-xl p-4 relative">
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="w-6 h-6 rounded bg-yellow-500/20 flex items-center justify-center">
-                                    <i class="fas fa-flag text-yellow-400 text-xs"></i>
-                                </span>
-                                <span class="text-yellow-400 text-xs font-bold">Melayu</span>
-                            </div>
-                            <div class="text-slate-300 text-xs whitespace-pre-line font-mono leading-relaxed max-h-40 overflow-y-auto" id="reportMs">-</div>
-                        </div>
-                    </div>
+                <div class="action-buttons">
+                    <button class="btn-copy" onclick="copyText('in')">
+                        📋 复制内容
+                    </button>
+                    <button class="btn-download" onclick="downloadText('in')">
+                        💾 下载文本
+                    </button>
                 </div>
             </div>
         </div>
-
-        <!-- 底部 -->
-        <footer class="mt-10 text-center">
-            <div class="glass-card rounded-2xl p-5 max-w-3xl mx-auto">
-                <p class="text-slate-400 text-sm leading-relaxed mb-1" data-i18n="footer1">
-                    💡 收益预估基于所选RS等级收益率计算
-                </p>
-                <p class="text-slate-500 text-xs" data-i18n="footer2">
-                    让我们一起抓住机遇，实现财富增长与稳定收益！
-                </p>
-            </div>
-        </footer>
     </div>
 
-    <!-- Toast -->
-    <div id="toast" class="toast fixed top-24 left-1/2 -translate-x-1/2 bg-slate-800/90 border border-green-500/30 text-white px-6 py-4 rounded-2xl shadow-2xl transform translate-y-[-100px] opacity-0 transition-all duration-300 flex items-center gap-3 z-50 font-medium glass-card">
-        <div class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
-            <i class="fas fa-check-circle text-green-400"></i>
-        </div>
-        <span id="toastMsg">操作成功</span>
-    </div>
+    <div class="toast" id="toast"></div>
 
     <script>
-        // ==================== RS等级系统配置 ====================
-        const LEVEL_SYSTEM = {
-            'R⭐': { min: 50, max: 299, rate: 0.020, color: 'blue', level: 1 },
-            'R⭐⭐': { min: 300, max: 599, rate: 0.023, color: 'blue', level: 2 },
-            'R⭐⭐⭐': { min: 600, max: 1499, rate: 0.025, color: 'blue', level: 3 },
-            'S⭐': { min: 1500, max: 2499, rate: 0.025, color: 'purple', level: 4 },
-            'S⭐⭐': { min: 2500, max: 9999, rate: 0.030, color: 'purple', level: 5 },
-            'S⭐⭐⭐': { min: 10000, max: 299999, rate: 0.040, color: 'purple', level: 6 },
-            'RS⭐': { min: 300000, max: 9999999, rate: 0.050, color: 'red', level: 7 },
-            'RS⭐⭐': { min: 300000, max: 9999999, rate: 0.060, color: 'red', level: 8 },
-            'RS⭐⭐⭐': { min: 300000, max: 9999999, rate: 0.080, color: 'red', level: 9 }
+        const rankData = {
+            R0: { deposit: 50, daily: 2, monthly: 60, yearly: 730 },
+            R1: { deposit: 150, daily: 5, monthly: 150, yearly: 1825 },
+            R2: { deposit: 450, daily: 15, monthly: 450, yearly: 5475 },
+            R3: { deposit: 1350, daily: 45, monthly: 1350, yearly: 16425 },
+            R4: { deposit: 4480, daily: 160, monthly: 4800, yearly: 58400 }
         };
 
-        const LEVEL_ORDER = ['R⭐', 'R⭐⭐', 'R⭐⭐⭐', 'S⭐', 'S⭐⭐', 'S⭐⭐⭐', 'RS⭐', 'RS⭐⭐', 'RS⭐⭐⭐'];
-
-        // ==================== 多语言翻译 ====================
-        const translations = {
-            zh: {
-                systemOnline: 'RS等级系统在线',
-                subtitle: '选择等级，输入金额，精准计算您的财富收益',
-                congrats: '恭喜您！',
-                congratsSub: '成功增加储蓄钱包资金',
-                congratsDesc: '您已迈出财富增值的第一步，财富增长之路正式开启！',
-                currentLevel: '当前等级',
-                upgradeOptions: '升级选项',
-                optional: '可选',
-                noUpgrade: '不升级 / 自定义选择',
-                targetLevel: '目标等级',
-                selectLevel: '选择等级',
-                balance: '储蓄钱包余额 (RM)',
-                addFunds: '本次转入金额 (RM)',
-                addFundsHint: '输入本次新增资金，系统将自动计算总余额。',
-                selectedLevel: '已选等级',
-                dailyRate: '日收益率',
-                newRate: '新收益率',
-                walletBalance: '储蓄钱包余额',
-                dailyIncome: '每日',
-                monthlyIncome: '每月',
-                yearlyIncome: '每年',
-                twoYearIncome: '两年',
-                copyAll: '复制全部三种语言',
-                preview: '报告预览',
-                footer1: '💡 收益预估基于所选RS等级收益率计算',
-                footer2: '让我们一起抓住机遇，实现财富增长与稳定收益！',
-                before: '升级前',
-                after: '升级后',
-                upgraded: '已升级'
-            },
-            en: {
-                systemOnline: 'RS Level System Online',
-                subtitle: 'Select level, enter amount, calculate your wealth income',
-                congrats: 'Congratulations!',
-                congratsSub: 'Successfully Added Savings',
-                congratsDesc: 'You have taken the first step towards wealth growth!',
-                currentLevel: 'Current Level',
-                upgradeOptions: 'Upgrade Options',
-                optional: 'Optional',
-                noUpgrade: 'No Upgrade / Custom Select',
-                targetLevel: 'Target Level',
-                selectLevel: 'Select Level',
-                balance: 'Current Balance (RM)',
-                addFunds: 'Transfer Amount (RM)',
-                addFundsHint: 'Enter new funds to calculate total balance.',
-                selectedLevel: 'Selected Level',
-                dailyRate: 'Daily Rate',
-                newRate: 'New Rate',
-                walletBalance: 'Total Wallet Balance',
-                dailyIncome: 'Daily',
-                monthlyIncome: 'Monthly',
-                yearlyIncome: 'Yearly',
-                twoYearIncome: '2-Year',
-                copyAll: 'Copy All Three Languages',
-                preview: 'Report Preview',
-                footer1: '💡 Income estimates based on selected RS level rates',
-                footer2: 'Let us seize opportunities and achieve wealth growth together!',
-                before: 'Before',
-                after: 'After',
-                upgraded: 'Upgraded'
-            },
-            ms: {
-                systemOnline: 'Sistem Peringkat RS Dalam Talian',
-                subtitle: 'Pilih peringkat, masukkan jumlah, kira pendapatan kekayaan anda',
-                congrats: 'Tahniah!',
-                congratsSub: 'Berjaya Menambah Simpanan',
-                congratsDesc: 'Anda telah mengambil langkah pertama ke arah pertumbuhan kekayaan!',
-                currentLevel: 'Peringkat Semasa',
-                upgradeOptions: 'Pilihan Naik Taraf',
-                optional: 'Pilihan',
-                noUpgrade: 'Tidak Naik Taraf / Pilih Sendiri',
-                targetLevel: 'Peringkat Sasaran',
-                selectLevel: 'Pilih Peringkat',
-                balance: 'Baki Semasa (RM)',
-                addFunds: 'Jumlah Pindahan (RM)',
-                addFundsHint: 'Masukkan dana baru untuk mengira baki jumlah.',
-                selectedLevel: 'Peringkat Dipilih',
-                dailyRate: 'Kadar Harian',
-                newRate: 'Kadar Baru',
-                walletBalance: 'Jumlah Baki Dompet',
-                dailyIncome: 'Harian',
-                monthlyIncome: 'Bulanan',
-                yearlyIncome: 'Tahunan',
-                twoYearIncome: '2-Tahun',
-                copyAll: 'Salin Ketiga-tiga Bahasa',
-                preview: 'Pratonton Laporan',
-                footer1: '💡 Anggaran pendapatan berdasarkan kadar peringkat RS',
-                footer2: 'Marilah kita merebut peluang dan mencapai pertumbuhan kekayaan bersama!',
-                before: 'Sebelum',
-                after: 'Selepas',
-                upgraded: 'Dinaik Taraf'
-            }
+        let textStore = {
+            up: { zh: '', en: '', ms: '' },
+            in: { zh: '', en: '', ms: '' }
         };
 
-        // ==================== 状态管理 ====================
-        let currentLang = 'zh';
-        let currentLevel = 'R⭐';
-        let targetLevel = 'R⭐';
-        let isUpgrade = false;
+        let currentLang = {
+            up: 'zh',
+            in: 'zh'
+        };
 
-        // ==================== 初始化 ====================
-        document.addEventListener('DOMContentLoaded', () => {
-            updateUpgradeOptions();
-            calculate();
-            updatePrincipalInWords(150);
-        });
-
-        // ==================== 升级选项更新 ====================
-        function updateUpgradeOptions() {
-            currentLevel = document.getElementById('currentLevelSelect').value;
-            const upgradeSelect = document.getElementById('upgradeLevelSelect');
-            const currentIdx = LEVEL_ORDER.indexOf(currentLevel);
-            
-            // 清空选项
-            upgradeSelect.innerHTML = `<option value="">${translations[currentLang].noUpgrade}</option>`;
-            
-            // 添加可升级选项（比当前等级高的等级）
-            for (let i = currentIdx + 1; i < LEVEL_ORDER.length; i++) {
-                const level = LEVEL_ORDER[i];
-                const config = LEVEL_SYSTEM[level];
-                const option = document.createElement('option');
-                option.value = level;
-                option.textContent = `${level} - ${(config.rate * 100).toFixed(1)}%`;
-                upgradeSelect.appendChild(option);
-            }
-            
-            // 如果没有可升级选项
-            if (currentIdx === LEVEL_ORDER.length - 1) {
-                upgradeSelect.innerHTML = `<option value="">${translations[currentLang].noUpgrade} (已达最高等级)</option>`;
-                upgradeSelect.disabled = true;
-            } else {
-                upgradeSelect.disabled = false;
-            }
-            
-            // 重置升级状态
-            handleUpgradeChange();
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.closest('.tab').classList.add('active');
+            document.getElementById('upgradeBox').classList.toggle('hidden', tab !== 'upgrade');
+            document.getElementById('inviteBox').classList.toggle('hidden', tab !== 'invite');
         }
 
-        function handleUpgradeChange() {
-            const upgradeSelect = document.getElementById('upgradeLevelSelect');
-            const upgradeValue = upgradeSelect.value;
-            const preview = document.getElementById('upgradePreview');
-            
-            if (upgradeValue) {
-                // 选择了升级
-                isUpgrade = true;
-                targetLevel = upgradeValue;
-                preview.classList.remove('hidden');
-                
-                document.getElementById('fromLevel').textContent = currentLevel;
-                document.getElementById('toLevel').textContent = targetLevel;
-                document.getElementById('newRate').textContent = (LEVEL_SYSTEM[targetLevel].rate * 100).toFixed(1) + '%';
-                
-                // 同步更新目标等级选择
-                document.getElementById('targetLevelSelect').value = targetLevel;
-                
-                // 更新升级卡片显示
-                updatePromoCard(true);
-            } else {
-                // 未选择升级
-                isUpgrade = false;
-                targetLevel = document.getElementById('targetLevelSelect').value;
-                preview.classList.add('hidden');
-                updatePromoCard(false);
+        function switchLang(type, lang) {
+            currentLang[type] = lang;
+            const section = type === 'up' ? 'upOutputSection' : 'inOutputSection';
+            document.querySelectorAll(`#${section} .lang-tab`).forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            const resultDiv = type === 'up' ? 'upResult' : 'inResult';
+            document.getElementById(resultDiv).textContent = textStore[type][lang];
+        }
+
+        function genUpgrade() {
+            const rank = document.getElementById('rank').value;
+            const activity = Number(document.getElementById('upActivity').value) || 0;
+            const lucky = document.getElementById('upLucky').checked;
+            const cashCode = document.getElementById('upCashCode').checked;
+            const data = rankData[rank];
+            const reward = (data.deposit * activity / 100).toFixed(2);
+
+            let activityText = activity > 0 ? `🎉 活动奖励 *RM${reward}*已顺利存入您的 RS 账户，请注意查收～\n` : '';
+            let luckyText = lucky ? `🏵 恭喜您已获得幸运抽奖资格，🎁 赢取高达 RM5,888 现金 + 📱 iPhone 17 Pro Max  请及时参与抽奖并分享获得的奖品～\n` : '';
+            let cashCodeText = cashCode ? `💵 恭喜你成功获得现金代码奖励，已经发送至你的账户，请领取之后及时分享至RS工作组中。\n` : '';
+
+            // 中文
+            const zh = `🎉 恭喜您！您已成功晋升至 *${rank}* 等级！
+
+📈 收入一览
+━━━━━━━━━━━━━━━━━━━━
+• 每个工作日收益：*RM${data.daily}*
+• 30个工作日总收入：*RM${data.monthly}*
+• 365个工作日总收入：*RM${data.yearly}*
+✅ 我们已为您全面开启：
+   • 更多合作伙伴邀请权限
+   • 农场投资项目
+${activityText}${luckyText}${cashCodeText}继续加油，我们一起把小溪变成大河！🚀`;
+
+            // 英文（完整翻译）
+            let activityTextEn = activity > 0 ? `🎉 Activity reward *RM${reward}* has been credited to your RS account, please check～\n` : '';
+            let luckyTextEn = lucky ? `🏵 Congratulations on your lucky draw qualification! 🎁 Win up to RM5,888 cash + 📱 iPhone 17 Pro Max. Participate in time and share your prizes～\n` : '';
+            let cashCodeTextEn = cashCode ? `💵 Congratulations on successfully obtaining the cash code reward. It has been sent to your account. Please claim it promptly and share it in the RS work group.\n` : '';
+
+            const en = `🎉 Congratulations! You have successfully been promoted to *${rank}* level!
+
+📈 Income Overview
+━━━━━━━━━━━━━━━━━━━━
+• Daily income: *RM${data.daily}*
+• 30 working days total income: *RM${data.monthly}*
+• 365 working days total income: *RM${data.yearly}*
+✅ We have fully activated for you:
+   • More partner invitation privileges
+   • Farm investment projects
+${activityTextEn}${luckyTextEn}${cashCodeTextEn}Keep going — let's turn small streams into a mighty river together! 🚀`;
+
+            // 马来文（完整翻译）
+            let activityTextMs = activity > 0 ? `🎉 Ganjaran aktiviti *RM${reward}* telah dikreditkan ke akaun RS anda, sila semak～\n` : '';
+            let luckyTextMs = lucky ? `🏵 Tahniah kerana mendapat kelayakan cabutan bertuah! 🎁 Menang sehingga RM5,888 tunai + 📱 iPhone 17 Pro Max. Sertai segera dan kongsi ganjaran anda～\n` : '';
+            let cashCodeTextMs = cashCode ? `💵 Tahniah kerana berjaya mendapat ganjaran kod tunai. Ia telah dihantar ke akaun anda. Sila tuntut segera dan kongsi dalam kumpulan kerja RS.\n` : '';
+
+            const ms = `🎉 Tahniah! Anda telah berjaya dinaikkan ke tahap *${rank}*!
+
+📈 Ringkasan Pendapatan
+━━━━━━━━━━━━━━━━━━━━
+• Pendapatan harian: *RM${data.daily}*
+• Jumlah pendapatan 30 hari bekerja: *RM${data.monthly}*
+• Jumlah pendapatan 365 hari bekerja: *RM${data.yearly}*
+✅ Kami telah mengaktifkan sepenuhnya untuk anda:
+   • Lebih banyak keistimewaan jemputan rakan kongsi
+   • Projek pelaburan ladang
+${activityTextMs}${luckyTextMs}${cashCodeTextMs}Teruskan usaha — mari kita ubah aliran kecil menjadi sungai yang besar! 🚀`;
+
+            textStore.up = { zh, en, ms };
+
+            document.getElementById('upStats').innerHTML = `
+                <div class="stat-item"><div class="stat-value">RM${data.deposit}</div><div class="stat-label">存入金额</div></div>
+                <div class="stat-item"><div class="stat-value">RM${data.daily}</div><div class="stat-label">日收益</div></div>
+                <div class="stat-item"><div class="stat-value">RM${data.monthly}</div><div class="stat-label">月收益</div></div>
+            `;
+
+            document.getElementById('upOutputSection').classList.remove('hidden');
+            document.getElementById('upResult').textContent = zh;
+            document.getElementById('upOutputSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function genInvite() {
+            const inviter = document.getElementById('inviter').value;
+            const newRank = document.getElementById('newRank').value;
+            const activity = Number(document.getElementById('inActivity').value) || 0;
+            const lucky = document.getElementById('inLucky').checked;
+            const cashCode = document.getElementById('inCashCode').checked;
+
+            const newData = rankData[newRank];
+            const invData = rankData[inviter];
+
+            let referral = newData.deposit * 0.1;
+            let passive = newData.daily * 0.03;
+
+            const inviterLevel = parseInt(inviter.substring(1));
+            const newLevel = parseInt(newRank.substring(1));
+
+            if (inviterLevel < newLevel) {
+                referral = invData.deposit * 0.1;
+                passive = 0;
             }
-            
-            selectTargetLevel(targetLevel);
+
+            const monthlyPassive = passive * 30;
+            const yearlyPassive = passive * 365;
+            const reward = (newData.deposit * activity / 100).toFixed(2);
+
+            // 中文
+            let activityText = activity > 0 ? `🎉 活动奖励 *RM${reward}* 已顺利存入您的 RS 账户，请注意查收～\n` : '';
+            let luckyText = lucky ? `🏵 恭喜您已获得幸运抽奖资格，🎁 赢取高达 RM5,888 现金 + 📱 iPhone 17 Pro Max  请及时参与抽奖并分享获得的奖品～\n` : '';
+            let cashCodeText = cashCode ? `💵 恭喜你成功获得现金代码奖励，已经发送至你的账户，请领取之后及时分享至RS工作组中。\n` : '';
+
+            const zh = `🎉 恭喜您！成功邀请 *${newRank}* 加入 RS 大家庭！
+
+💰 邀请奖励详情
+━━━━━━━━━━━━━━━━━━━━
+🎁 您的奖励：
+   • 基础推荐奖励：RM${referral.toFixed(2)}
+   • 被动收入：RM${passive.toFixed(2)}/工作日
+   • 预计月被动收入：RM${monthlyPassive.toFixed(2)}
+   • 预计年被动收入：RM${yearlyPassive.toFixed(2)}
+${activityText}${luckyText}${cashCodeText}未来您将持续享有下属每日 *3%* 的工作佣金！
+感谢你的信任与支持，让我们一起创造更多财富！🚀`;
+
+            // 英文（完整翻译）
+            let activityTextEn = activity > 0 ? `🎉 Activity reward *RM${reward}* has been credited to your RS account, please check～\n` : '';
+            let luckyTextEn = lucky ? `🏵 Congratulations on your lucky draw qualification! 🎁 Win up to RM5,888 cash + 📱 iPhone 17 Pro Max. Participate in time and share your prizes～\n` : '';
+            let cashCodeTextEn = cashCode ? `💵 Congratulations on successfully obtaining the cash code reward. It has been sent to your account. Please claim it promptly and share it in the RS work group.\n` : '';
+
+            const en = `🎉 Congratulations! You have successfully invited *${newRank}* to join the RS family!
+
+💰 Invitation Reward Details
+━━━━━━━━━━━━━━━━━━━━
+🎁 Your rewards:
+   • Basic referral bonus: RM${referral.toFixed(2)}
+   • Passive income: RM${passive.toFixed(2)}/working day
+   • Estimated monthly passive income: RM${monthlyPassive.toFixed(2)}
+   • Estimated yearly passive income: RM${yearlyPassive.toFixed(2)}
+${activityTextEn}${luckyTextEn}${cashCodeTextEn}You will continue to enjoy *3%* daily working commission from your subordinates!
+Thank you for your trust and support. Let's create more wealth together! 🚀`;
+
+            // 马来文（完整翻译）
+            let activityTextMs = activity > 0 ? `🎉 Ganjaran aktiviti *RM${reward}* telah dikreditkan ke akaun RS anda, sila semak～\n` : '';
+            let luckyTextMs = lucky ? `🏵 Tahniah kerana mendapat kelayakan cabutan bertuah! 🎁 Menang sehingga RM5,888 tunai + 📱 iPhone 17 Pro Max. Sertai segera dan kongsi ganjaran anda～\n` : '';
+            let cashCodeTextMs = cashCode ? `💵 Tahniah kerana berjaya mendapat ganjaran kod tunai. Ia telah dihantar ke akaun anda. Sila tuntut segera dan kongsi dalam kumpulan kerja RS.\n` : '';
+
+            const ms = `🎉 Tahniah! Anda berjaya menjemput *${newRank}* menyertai keluarga RS!
+
+💰 Butiran Ganjaran Jemputan
+━━━━━━━━━━━━━━━━━━━━
+🎁 Ganjaran anda:
+   • Bonus rujukan asas: RM${referral.toFixed(2)}
+   • Pendapatan pasif: RM${passive.toFixed(2)}/hari bekerja
+   • Anggaran pendapatan pasif bulanan: RM${monthlyPassive.toFixed(2)}
+   • Anggaran pendapatan pasif tahunan: RM${yearlyPassive.toFixed(2)}
+${activityTextMs}${luckyTextMs}${cashCodeTextMs}Anda akan terus menikmati komisen kerja harian *3%* dari bawahan anda!
+Terima kasih atas kepercayaan dan sokongan anda. Mari kita cipta lebih banyak kekayaan bersama! 🚀`;
+
+            textStore.in = { zh, en, ms };
+
+            document.getElementById('inStats').innerHTML = `
+                <div class="stat-item"><div class="stat-value">RM${referral.toFixed(2)}</div><div class="stat-label">推荐奖励</div></div>
+                <div class="stat-item"><div class="stat-value">${passive > 0 ? 'RM' + passive.toFixed(2) : '-'}</div><div class="stat-label">日被动收入</div></div>
+                <div class="stat-item"><div class="stat-value">${passive > 0 ? 'RM' + monthlyPassive.toFixed(2) : '-'}</div><div class="stat-label">月被动收入</div></div>
+            `;
+
+            document.getElementById('inOutputSection').classList.remove('hidden');
+            document.getElementById('inResult').textContent = zh;
+            document.getElementById('inOutputSection').scrollIntoView({ behavior: 'smooth' });
         }
 
-        function updatePromoCard(upgrade) {
-            // Get values from inputs
-            const oldPrincipal = parseFloat(document.getElementById('principal').value) || 0;
-            const addedFunds = parseFloat(document.getElementById('addFundsInput').value) || 0;
-            const totalPrincipal = oldPrincipal + addedFunds;
-            
-            const fmt = (n) => '**RM ' + n.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '**';
-            
-            if (upgrade) {
-                const config = LEVEL_SYSTEM[targetLevel];
-                const dailyIncome = totalPrincipal * config.rate;
-                const monthlyIncome = dailyIncome * 30;
-                const yearlyIncome = dailyIncome * 365;
-                const twoYearIncome = yearlyIncome * 2;
-                
-                document.getElementById('promoIcon').innerHTML = '🌟';
-                document.getElementById('promoTitle').textContent = '恭喜您成功晋升至 ' + targetLevel + ' 等级！🎉';
-                document.getElementById('promoSub').textContent = currentLevel + '（' + (LEVEL_SYSTEM[currentLevel].rate * 100).toFixed(1) + '%） → ' + targetLevel + '（' + (LEVEL_SYSTEM[targetLevel].rate * 100).toFixed(1) + '%）';
-                
-                // Updated Copy for Upgrade Scenario
-                document.getElementById('promoDesc').innerHTML = `您已向储蓄钱包转入 ${fmt(addedFunds)}。<br>当前储蓄钱包总金额为 ${fmt(totalPrincipal)}。<br><br>每日预计收益：${fmt(dailyIncome)} ｜ 月收入：${fmt(monthlyIncome)} ｜ 年收入：${fmt(yearlyIncome)} ｜ 两年总收入：${fmt(twoYearIncome)}<br><br>每一次分享都是价值的积累，每一份信任都是财富的基石。继续邀请更多伙伴，共创更高收益与辉煌未来！💫`;
-                
-                document.getElementById('promoCard').classList.add('upgrade-card');
-            } else {
-                document.getElementById('promoIcon').innerHTML = '🎯';
-                document.getElementById('promoTitle').textContent = '恭喜您！储蓄钱包资金已成功增加！';
-                document.getElementById('promoSub').textContent = '您已迈出财富增值的关键一步';
-                
-                // Updated Copy for Non-Upgrade Scenario
-                document.getElementById('promoDesc').innerHTML = `您已向储蓄钱包转入 ${fmt(addedFunds)}。<br>当前储蓄钱包总金额为 ${fmt(totalPrincipal)}。<br><br>属于您的财富增长之路，正式启航！🚀 继续积累，实现真正的财富增长与持续收益！💪💰`;
-                
-                document.getElementById('promoCard').classList.remove('upgrade-card');
-            }
-        }
-
-        // ==================== 目标等级选择 ====================
-        function selectTargetLevel(level) {
-            targetLevel = level;
-            const config = LEVEL_SYSTEM[targetLevel];
-            
-            document.getElementById('selectedLevelName').textContent = targetLevel;
-            document.getElementById('selectedRate').textContent = (config.rate * 100).toFixed(1) + '%';
-            
-            // 如果手动选择了不同于升级选项的等级，取消升级选择
-            const upgradeSelect = document.getElementById('upgradeLevelSelect');
-            if (upgradeSelect.value && upgradeSelect.value !== level) {
-                upgradeSelect.value = '';
-                isUpgrade = false;
-                document.getElementById('upgradePreview').classList.add('hidden');
-                updatePromoCard(false);
-            }
-            
-            calculate();
-        }
-
-        // ==================== 核心计算 ====================
-        function calculate() {
-            // Logic Change: Total = Old Principal + Added Funds
-            const oldPrincipal = parseFloat(document.getElementById('principal').value) || 0;
-            const addedFunds = parseFloat(document.getElementById('addFundsInput').value) || 0;
-            const totalPrincipal = oldPrincipal + addedFunds;
-
-            const config = LEVEL_SYSTEM[targetLevel];
-            
-            // 计算收益 (Based on Total Principal)
-            const dailyIncome = totalPrincipal * config.rate;
-            const monthlyIncome = dailyIncome * 30;
-            const yearlyIncome = dailyIncome * 365;
-            const twoYearIncome = yearlyIncome * 2;
-            
-            // 更新显示
-            updateDisplay({
-                principal: totalPrincipal, // Display Total
-                added: addedFunds,         // Pass added for report
-                level: targetLevel,
-                rate: config.rate,
-                daily: dailyIncome,
-                monthly: monthlyIncome,
-                yearly: yearlyIncome,
-                twoYear: twoYearIncome
-            });
-            
-            // 更新升级信息展示
-            if (isUpgrade) {
-                document.getElementById('upgradeInfo').classList.remove('hidden');
-                document.getElementById('beforeRate').textContent = (LEVEL_SYSTEM[currentLevel].rate * 100).toFixed(1) + '%';
-                document.getElementById('afterRate').textContent = (LEVEL_SYSTEM[targetLevel].rate * 100).toFixed(1) + '%';
-            } else {
-                document.getElementById('upgradeInfo').classList.add('hidden');
-            }
-            
-            // 更新中文大写金额
-            if (currentLang === 'zh') {
-                updatePrincipalInWords(totalPrincipal);
-            }
-            
-            // 更新 promo 卡片中的金额
-            updatePromoCard(isUpgrade);
-        }
-
-        function updateDisplay(data) {
-            const fmt = (n) => '**RM ' + n.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '**';
-            
-            animateValue('displayPrincipal', fmt(data.principal));
-            animateValue('dailyIncome', fmt(data.daily));
-            animateValue('monthlyIncome', fmt(data.monthly));
-            animateValue('yearlyIncome', fmt(data.yearly));
-            animateValue('twoYearIncome', fmt(data.twoYear));
-            
-            generateReports(data);
-        }
-
-        function animateValue(id, newValue) {
-            const el = document.getElementById(id);
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(10px)';
-            setTimeout(() => {
-                el.textContent = newValue;
-                el.style.opacity = '1';
-                el.style.transform = 'translateY(0)';
-            }, 150);
-        }
-
-        // 中文数字大写转换
-        function updatePrincipalInWords(num) {
-            const digits = ['零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖'];
-            const units = ['', '拾', '佰', '仟', '万', '拾', '佰', '仟', '亿'];
-            
-            if (num === 0) {
-                document.getElementById('principalInWords').textContent = '零令吉';
+        async function copyText(type) {
+            const text = textStore[type][currentLang[type]];
+            if (!text) {
+                showToast('请先生成话术！', 'warning');
                 return;
             }
-            
-            let str = num.toFixed(2).toString();
-            let [integer, decimal] = str.split('.');
-            let result = '';
-            
-            let intStr = parseInt(integer).toString();
-            let zeroCount = 0;
-            
-            for (let i = 0; i < intStr.length; i++) {
-                let n = parseInt(intStr[i]);
-                let unit = units[intStr.length - 1 - i];
-                
-                if (n === 0) {
-                    zeroCount++;
-                    if (unit === '万' || unit === '亿') {
-                        result += unit;
-                        zeroCount = 0;
-                    }
-                } else {
-                    if (zeroCount > 0) {
-                        result += digits[0];
-                        zeroCount = 0;
-                    }
-                    result += digits[n] + unit;
-                }
-            }
-            
-            result += '令吉';
-            
-            if (decimal && parseInt(decimal) > 0) {
-                let jiao = parseInt(decimal[0]);
-                let fen = parseInt(decimal[1]);
-                if (jiao > 0) result += digits[jiao] + '角';
-                if (fen > 0) result += digits[fen] + '分';
-            }
-            
-            document.getElementById('principalInWords').textContent = result;
-        }
-
-        // ==================== 生成多语言报告 ====================
-        function generateReports(data) {
-            const fmt = (n) => '**RM ' + n.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '**';
-            
-            const reports = {
-                zh: generateReport('zh', data, fmt),
-                en: generateReport('en', data, fmt),
-                ms: generateReport('ms', data, fmt)
-            };
-            
-            document.getElementById('reportZh').textContent = reports.zh;
-            document.getElementById('reportEn').textContent = reports.en;
-            document.getElementById('reportMs').textContent = reports.ms;
-        }
-
-        function generateReport(lang, data, fmt) {
-            // New Logic for Report: Show Transfer and Total
-            const transferLine = {
-                zh: `您已向储蓄钱包转入 ${fmt(data.added)}。\n当前储蓄钱包总金额为 ${fmt(data.principal)}。\n`,
-                en: `You have transferred ${fmt(data.added)} to your savings wallet.\nCurrent total balance is ${fmt(data.principal)}.\n`,
-                ms: `Anda telah memindahkan ${fmt(data.added)} ke dompet simpanan anda.\nJumlah baki semasa ialah ${fmt(data.principal)}.\n`
-            };
-
-            if (lang === 'zh') {
-                if (isUpgrade) {
-                    // 升级话术（中文）
-                    return `恭喜您成功晋升至 ${targetLevel} 等级！🎉 
-${currentLevel}（${(LEVEL_SYSTEM[currentLevel].rate * 100).toFixed(1)}%） → ${targetLevel}（${(data.rate * 100).toFixed(1)}%）
-${transferLine.zh}
-
-每日预计收益：${fmt(data.daily)} ｜ 月收入：${fmt(data.monthly)} ｜ 年收入：${fmt(data.yearly)} ｜ 两年总收入：${fmt(data.twoYear)}
-
-每一次分享都是价值的积累，每一份信任都是财富的基石。继续邀请更多伙伴，共创更高收益与辉煌未来！💫`;
-                } else {
-                    // 不升级话术（中文）
-                    return `🎯 恭喜您！储蓄钱包资金已成功增加！
-
-${transferLine.zh}
-✅ 当前资产概览：
-当前等级： ${data.level}（日收益率 ${(data.rate * 100).toFixed(1)}%）
-每日收入预估： ${fmt(data.daily)}
-月收入预估： ${fmt(data.monthly)}
-年收入预估： ${fmt(data.yearly)}
-两年总收入预估： ${fmt(data.twoYear)}
-
-每一步的增长，都是向更大财富目标迈进的有力脚印。
-让我们一起抓住机遇，稳步前行，实现真正的财富增长与持续收益！💪💰`;
-                }
-            } else if (lang === 'en') {
-                if (isUpgrade) {
-                    // 升级话术（英文）
-                    return `Congratulations on your promotion to ${targetLevel} Level! 🎉
-${currentLevel} (${(LEVEL_SYSTEM[currentLevel].rate * 100).toFixed(1)}%) → ${targetLevel} (${(data.rate * 100).toFixed(1)}%)
-${transferLine.en}
-
-Estimated Daily Income: ${fmt(data.daily)} | Monthly: ${fmt(data.monthly)} | Yearly: ${fmt(data.yearly)} | Two-Year Total: ${fmt(data.twoYear)}
-
-Every share accumulates value, every trust builds the foundation of wealth. Continue inviting more partners to create higher returns and a brilliant future! 💫`;
-                } else {
-                    // 不升级话术（英文）
-                    return `🎯 Congratulations! Savings Wallet funds have been successfully increased!
-
-${transferLine.en}
-✅ Current Asset Overview:
-Current Level: ${data.level} (Daily Rate ${(data.rate * 100).toFixed(1)}%)
-Daily Income Estimate: ${fmt(data.daily)}
-Monthly Income Estimate: ${fmt(data.monthly)}
-Yearly Income Estimate: ${fmt(data.yearly)}
-Two-Year Total Income Estimate: ${fmt(data.twoYear)}
-
-Every step of growth is a powerful footprint towards greater wealth goals.
-Let us seize opportunities together, move forward steadily, and achieve true wealth growth and sustainable returns! 💪💰`;
-                }
-            } else {
-                // ms (马来语)
-                if (isUpgrade) {
-                    // 升级话术（马来语）
-                    return `Tahniah atas kenaikan pangkat anda ke Peringkat ${targetLevel}! 🎉
-${currentLevel} (${(LEVEL_SYSTEM[currentLevel].rate * 100).toFixed(1)}%) → ${targetLevel} (${(data.rate * 100).toFixed(1)}%)
-${transferLine.ms}
-
-Anggaran Pendapatan Harian: ${fmt(data.daily)} | Bulanan: ${fmt(data.monthly)} | Tahunan: ${fmt(data.yearly)} | Jumlah Dua Tahun: ${fmt(data.twoYear)}
-
-Setiap perkongsian mengumpul nilai, setiap kepercayaan membina asas kekayaan. Terus jemput lebih banyak rakan kongsi untuk mencipta pulangan yang lebih tinggi dan masa depan yang cemerlang! 💫`;
-                } else {
-                    // 不升级话术（马来语）
-                    return `🎯 Tahniah! Dana Dompet Simpanan telah berjaya ditambah!
-
-${transferLine.ms}
-✅ Gambaran Keseluruhan Aset Semasa:
-Peringkat Semasa: ${data.level} (Kadar Harian ${(data.rate * 100).toFixed(1)}%)
-Anggaran Pendapatan Harian: ${fmt(data.daily)}
-Anggaran Pendapatan Bulanan: ${fmt(data.monthly)}
-Anggaran Pendapatan Tahunan: ${fmt(data.yearly)}
-Anggaran Jumlah Pendapatan Dua Tahun: ${fmt(data.twoYear)}
-
-Setiap langkah pertumbuhan adalah jejak yang kuat ke arah matlamat kekayaan yang lebih besar.
-Marilah kita merebut peluang bersama, bergerak ke hadapan dengan stabil, dan mencapai pertumbuhan kekayaan sebenar dan pulangan mampan! 💪💰`;
-                }
+            try {
+                await navigator.clipboard.writeText(text);
+                const btn = event.target;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '✅ 已复制';
+                btn.classList.add('copied');
+                showToast('复制成功！');
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('copied');
+                }, 2000);
+            } catch (err) {
+                showToast('复制失败', 'error');
             }
         }
 
-        // ==================== 复制功能 ====================
-        function copyReport(lang) {
-            const text = document.getElementById('report' + lang.charAt(0).toUpperCase() + lang.slice(1)).textContent;
-            
-            navigator.clipboard.writeText(text).then(() => {
-                const msg = {
-                    zh: '复制成功',
-                    en: 'Copied',
-                    ms: 'Berjaya'
-                };
-                showToast(msg[lang]);
-            });
+        function downloadText(type) {
+            const text = textStore[type][currentLang[type]];
+            if (!text) {
+                showToast('请先生成话术！', 'warning');
+                return;
+            }
+            const typeName = type === 'up' ? '升级祝贺' : '邀请祝贺';
+            const langName = currentLang[type] === 'zh' ? '中文' : currentLang[type] === 'en' ? 'English' : 'Melayu';
+            const filename = `RS话术_${typeName}_${langName}_${new Date().toLocaleDateString()}.txt`;
+            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('下载成功！');
         }
 
-        function copyAllReports() {
-            const zh = document.getElementById('reportZh').textContent;
-            const en = document.getElementById('reportEn').textContent;
-            const ms = document.getElementById('reportMs').textContent;
-            
-            const fullText = `【中文 Chinese】\n${zh}\n\n【English】\n${en}\n\n【Bahasa Melayu】\n${ms}`;
-            
-            navigator.clipboard.writeText(fullText).then(() => {
-                showToast(currentLang === 'zh' ? '已复制全部三种语言' : currentLang === 'en' ? 'All three languages copied' : 'Ketiga-tiga bahasa disalin');
-            });
-        }
-
-        // ==================== 语言切换 ====================
-        function setLanguage(lang) {
-            currentLang = lang;
-            
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                if (btn.dataset.lang === lang) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
-            });
-            
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.dataset.i18n;
-                if (translations[lang][key]) {
-                    el.textContent = translations[lang][key];
-                }
-            });
-            
-            // 重新生成升级选项（更新语言）
-            updateUpgradeOptions();
-            
-            // 重新计算以更新报告语言
-            calculate();
-            
-            // 显示/隐藏中文大写金额
-            document.getElementById('principalInWords').style.display = lang === 'zh' ? 'block' : 'none';
-            
-            showToast(lang === 'zh' ? '已切换至中文' : lang === 'en' ? 'Switched to English' : 'Tukar ke Bahasa Melayu');
-        }
-
-        // ==================== 工具函数 ====================
-        function showToast(message) {
+        function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
-            document.getElementById('toastMsg').textContent = message;
-            
-            toast.classList.remove('translate-y-[-100px]', 'opacity-0');
-            toast.classList.add('translate-y-0', 'opacity-100');
-            
-            setTimeout(() => {
-                toast.classList.add('translate-y-[-100px]', 'opacity-0');
-                toast.classList.remove('translate-y-0', 'opacity-100');
-            }, 3000);
+            toast.textContent = message;
+            toast.style.background = type === 'error' ? '#dc3545' : type === 'warning' ? '#ffc107' : '#333';
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
         }
     </script>
 </body>
